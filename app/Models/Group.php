@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Group extends Model
 {
@@ -13,6 +14,7 @@ class Group extends Model
 
     protected $fillable = [
         'name',
+        'filiere',
         'department_id',
         'max_interns',
         'days_of_week',
@@ -47,5 +49,24 @@ class Group extends Model
     public function activeInterns(): HasMany
     {
         return $this->interns()->active();
+    }
+
+    public function currentInterns(): HasMany
+    {
+        return $this->interns()->current();
+    }
+
+    public static function forFiliere(string $filiere, ?int $departmentId = null): self
+    {
+        $normalized = trim($filiere) !== '' ? trim($filiere) : 'General';
+
+        return static::firstOrCreate(
+            ['filiere' => $normalized],
+            [
+                'name'          => Str::title($normalized),
+                'department_id' => $departmentId,
+                'max_interns'   => 100, // generous default, since grouping is now auto by filiere
+            ]
+        );
     }
 }

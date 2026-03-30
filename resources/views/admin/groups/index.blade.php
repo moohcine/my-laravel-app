@@ -6,9 +6,7 @@
 <div class="container py-4 py-md-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="fw-bold text-white mb-0">{{ __('Groups') }}</h3>
-        <a href="{{ route('admin.groups.create') }}" class="btn btn-sm ndc-btn ndc-btn-primary">
-            <i class="bi bi-plus-lg me-1"></i> {{ __('New group') }}
-        </a>
+        <span class="small text-secondary">{{ __('Groups are auto-created per filière.') }}</span>
     </div>
 
     @if (session('status'))
@@ -22,7 +20,7 @@
             <table class="table table-sm table-dark table-dark-modern align-middle mb-0">
                 <thead>
                 <tr class="small text-secondary">
-                    <th>{{ __('Name') }}</th>
+                    <th>{{ __('Filière') }}</th>
                     <th>{{ __('Department') }}</th>
                     <th>{{ __('Max interns') }}</th>
                     <th>{{ __('Capacity') }}</th>
@@ -33,7 +31,10 @@
                 <tbody>
                 @forelse ($groups as $group)
                     <tr>
-                        <td>{{ $group->name }}</td>
+                        <td>
+                            <div class="fw-semibold text-white">{{ $group->filiere }}</div>
+                            <div class="small text-secondary">{{ $group->name }}</div>
+                        </td>
                         <td class="small text-secondary">{{ $group->department?->name ?? '—' }}</td>
                         <td class="small text-secondary">{{ $group->max_interns }}</td>
                         <td class="small text-secondary">

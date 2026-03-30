@@ -14,7 +14,8 @@
     <div class="row g-4">
         <div class="col-lg-6">
             <div class="ndc-card p-4 h-100">
-                <h5 class="text-white mb-3">{{ $group->name }}</h5>
+                <h5 class="text-white mb-1">{{ $group->filiere }}</h5>
+                <p class="text-secondary small mb-3">{{ __('Auto-generated group based on filière') }}</p>
                 <p class="small text-secondary mb-1">
                     {{ __('Department:') }} <span class="fw-semibold text-white">{{ $group->department?->name ?? '—' }}</span>
                 </p>

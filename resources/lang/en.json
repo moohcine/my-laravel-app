@@ -78,8 +78,6 @@
     "End": "End",
     "End date": "End date",
     "End time": "End time",
-    "Field of study": "Field of study",
-    "Field of study:": "Field of study:",
     "Filière": "Filière",
     "Filière:": "Filière:",
     "Fill in your information and upload your CV (PDF). Your application will appear as": "Fill in your information and upload your CV (PDF). Your application will appear as",
@@ -195,6 +193,7 @@
     "Profile": "Profile",
     "Rank #:rank": "Rank #:rank",
     "Register": "Register",
+    "Remember me": "Remember me",
     "Register your internship application or login to follow your approval status, group assignment and timetable.": "Register your internship application or login to follow your approval status, group assignment and timetable.",
     "Reject request": "Reject request",
     "Rejected": "Rejected",
@@ -302,5 +301,7 @@
     "View tasks": "View tasks",
     "View your tasks": "View your tasks",
     "See the tasks your group is working on and mark them as completed when done.": "See the tasks your group is working on and mark them as completed when done.",
-    "Due date": "Due date"
+    "Due date": "Due date",
+    "certificate.default_message": "I would like to express my deep gratitude and sincere thanks to everyone who contributed, directly or indirectly, to the completion of this work. Their constant support, considerable efforts and commitment played an essential role in bringing this project to fruition. Their spirit of collaboration, professionalism and dedication were a true source of motivation throughout this journey. I value the time and energy they invested, and I hope to continue sharing future successes with them. I wish them much success and fulfillment in their upcoming projects.",
+    "certificate.default_note": "GOOD"
 }

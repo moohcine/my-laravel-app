@@ -7,7 +7,7 @@
             </div>
             <div class="text-end">
                 <p class="small text-muted mb-0">{{ __('Interns') }}</p>
-                <strong class="fs-4">{{ $group->interns->count() }}</strong>
+                <strong class="fs-4">{{ $group->active_interns_count ?? $group->activeInterns->count() }}</strong>
             </div>
         </header>
         @forelse($group->tasks as $task)

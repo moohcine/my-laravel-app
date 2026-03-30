@@ -9,6 +9,9 @@
             <p class="small text-secondary text-uppercase mb-1">{{ __('Group tasks') }}</p>
             <h3 class="fw-bold text-white mb-0">{{ __('Your assignments') }}</h3>
         </div>
+        <a href="{{ route('intern.dashboard') }}" class="btn btn-sm ndc-btn ndc-btn-outline">
+            <i class="bi bi-arrow-left me-1"></i> {{ __('Back to dashboard') }}
+        </a>
     </div>
 
     <div class="row g-3">

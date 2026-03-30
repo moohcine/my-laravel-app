@@ -32,12 +32,13 @@ Route::prefix('intern')->name('intern.')->group(function () {
     Route::post('/login', [InternAuthController::class, 'login'])->name('login.submit');
     Route::post('/logout', [InternAuthController::class, 'logout'])->name('logout');
 
-    Route::middleware(['auth', 'role:intern'])->group(function () {
+    Route::middleware(['auth', 'isIntern'])->group(function () {
         Route::get('/dashboard', [InternDashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [InternDashboardController::class, 'profile'])->name('profile');
         Route::get('/tasks', [InternTaskController::class, 'index'])->name('tasks.index');
         Route::post('/tasks/{task}/status', [InternTaskController::class, 'markCompleted'])->name('tasks.status');
         Route::get('/certificate', [InternCertificateController::class, 'show'])->name('certificate.show');
+        Route::get('/certificate/download', [InternCertificateController::class, 'download'])->name('certificate.download');
     });
 });
 
@@ -47,7 +48,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-        Route::middleware(['auth', 'role:admin'])->group(function () {
+        Route::middleware(['auth', 'isAdmin'])->group(function () {
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
             // Internship requests management
@@ -66,9 +67,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/interns-history/export', [AdminInternController::class, 'exportHistory'])->name('interns.history.export');
         Route::post('/interns/{intern}/certificate/draft', [AdminCertificateController::class, 'draft'])->name('interns.certificate.draft');
         Route::post('/interns/{intern}/certificate', [AdminCertificateController::class, 'store'])->name('interns.certificate.store');
+        Route::get('/interns/{intern}/certificate/download', [AdminCertificateController::class, 'download'])->name('interns.certificate.download');
 
         // Groups management
-        Route::resource('groups', AdminGroupController::class);
+        Route::resource('groups', AdminGroupController::class)->only(['index', 'show']);
 
         // Task management
         Route::get('/tasks', [AdminTaskController::class, 'index'])->name('tasks.index');
@@ -81,6 +83,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/timetables', [AdminTimetableController::class, 'index'])->name('timetables.index');
         Route::get('/timetables/create', [AdminTimetableController::class, 'create'])->name('timetables.create');
         Route::post('/timetables', [AdminTimetableController::class, 'store'])->name('timetables.store');
+        Route::put('/timetables/{timetable}', [AdminTimetableController::class, 'update'])->name('timetables.update');
+        Route::delete('/timetables/{timetable}', [AdminTimetableController::class, 'destroy'])->name('timetables.destroy');
 
         // Attendance
         Route::get('/attendance', [AdminAttendanceController::class, 'index'])->name('attendance.index');

@@ -16,19 +16,27 @@ class InternDashboardController extends Controller
             ->with(['group.timetables', 'group.interns.user', 'department', 'attendances'])
             ->first();
 
+        $isActive = false;
+        if ($intern) {
+            $isActive = $intern->active && (! $intern->end_date || $intern->end_date->isFuture());
+        }
+
         $attendanceCount = $intern?->attendances()->where('status', 'present')->count() ?? 0;
         $totalDays = $intern?->duration_days ?? null;
         $timetable = $intern?->group?->timetables?->groupBy('day_of_week') ?? collect();
         $groupMembers = $intern?->group?->interns?->where('id', '!=', $intern->id) ?? collect();
+        $certificate = $intern?->certificate;
 
         return view('intern.dashboard', [
             'user'            => $user,
             'request'         => $request,
             'intern'          => $intern,
+            'isActive'        => $isActive,
             'attendanceCount' => $attendanceCount,
             'totalDays'       => $totalDays,
             'timetable'       => $timetable,
             'groupMembers'    => $groupMembers,
+            'certificate'     => $certificate,
         ]);
     }
 

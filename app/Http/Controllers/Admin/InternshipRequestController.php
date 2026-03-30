@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\InternshipRequestStatusChanged;
 use App\Models\Intern;
 use App\Models\InternshipRequest;
+use App\Models\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -18,15 +19,15 @@ class InternshipRequestController extends Controller
         $status = $request->query('status');
         $search = $request->query('search');
 
-        $query = InternshipRequest::with('user')->latest();
+        $query = InternshipRequest::with(['user', 'intern.group'])->latest();
 
         if ($status) {
-            $query->where('status', $status);
             if ($status === 'accepted') {
-                $query->where(function ($q) {
-                    $q->whereNull('period_end')
-                      ->orWhere('period_end', '>=', now()->toDateString());
-                });
+                // Only show accepted requests that have an intern record (i.e., actually onboarded).
+                $query->where('status', 'accepted')
+                      ->whereHas('intern');
+            } else {
+                $query->where('status', $status);
             }
         }
 
@@ -57,10 +58,14 @@ class InternshipRequestController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        Intern::firstOrCreate(
+        $group = Group::forFiliere($request->filiere ?? 'General');
+
+        Intern::updateOrCreate(
             ['user_id' => $request->user_id],
             [
                 'internship_request_id' => $request->id,
+                'group_id'              => $group->id,
+                'department_id'         => $group->department_id,
                 'start_date'            => $request->period_start,
                 'end_date'              => $request->period_end,
                 'duration_days'         => $request->period_start && $request->period_end

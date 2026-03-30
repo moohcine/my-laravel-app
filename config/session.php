@@ -31,8 +31,9 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => env('SESSION_LIFETIME', 1440),
 
+    // Keep the session across browser restarts; logout is explicit.
     'expire_on_close' => false,
 
     /*

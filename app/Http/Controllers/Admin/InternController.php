@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Group;
 use App\Models\Intern;
 use App\Models\User;
+use App\Services\CertificateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,10 @@ use Illuminate\Validation\ValidationException;
 
 class InternController extends Controller
 {
+    public function __construct(protected CertificateService $certificateService)
+    {
+    }
+
     public function index(Request $request)
     {
         $this->expireFinishedInterns();
@@ -72,9 +77,8 @@ class InternController extends Controller
     public function create()
     {
         $departments = Department::all();
-        $groups = Group::withCount('activeInterns')->get();
 
-        return view('admin.interns.create', compact('departments', 'groups'));
+        return view('admin.interns.create', compact('departments'));
     }
 
     public function store(Request $request)
@@ -84,7 +88,7 @@ class InternController extends Controller
             'email'         => 'required|email|unique:users,email',
             'password'      => 'required|string|min:8',
             'department_id' => 'nullable|exists:departments,id',
-            'group_id'      => 'nullable|exists:groups,id',
+            'filiere'       => 'required|string|max:255',
             'start_date'    => 'nullable|date',
             'end_date'      => 'nullable|date|after_or_equal:start_date',
             'active'        => 'nullable|boolean',
@@ -98,18 +102,13 @@ class InternController extends Controller
                 'role'     => 'intern',
             ]);
 
-        $groupId = $data['group_id'] ?? null;
-        $group = $groupId ? Group::find($groupId) : null;
-
-        if ($group) {
-            $this->ensureGroupCapacity($group);
-            $data['department_id'] = $data['department_id'] ?? $group->department_id;
-        }
+        $group = Group::forFiliere($data['filiere'], $data['department_id'] ?? null);
+        $this->ensureGroupCapacity($group);
 
             $intern = new Intern();
             $intern->user_id = $user->id;
-            $intern->department_id = $data['department_id'] ?? null;
-            $intern->group_id = $groupId;
+            $intern->department_id = $data['department_id'] ?? $group->department_id;
+            $intern->group_id = $group->id;
             $intern->start_date = $data['start_date'] ?? null;
             $intern->end_date = $data['end_date'] ?? null;
             $intern->active = $data['active'] ?? true;
@@ -132,6 +131,7 @@ class InternController extends Controller
             'department',
             'attendances' => fn ($q) => $q->orderByDesc('date'),
             'request',
+            'certificate',
         ]);
 
         return view('admin.interns.show', compact('intern'));
@@ -140,30 +140,25 @@ class InternController extends Controller
     public function edit(Intern $intern)
     {
         $departments = Department::all();
-        $groups = Group::withCount('activeInterns')->get();
 
-        return view('admin.interns.edit', compact('intern', 'departments', 'groups'));
+        return view('admin.interns.edit', compact('intern', 'departments'));
     }
 
     public function update(Request $request, Intern $intern)
     {
         $data = $request->validate([
             'department_id' => 'nullable|exists:departments,id',
-            'group_id'      => 'nullable|exists:groups,id',
+            'filiere'       => 'required|string|max:255',
             'start_date'    => 'nullable|date',
             'end_date'      => 'nullable|date|after_or_equal:start_date',
             'active'        => 'nullable|boolean',
             'admin_note'    => 'nullable|string|max:2000',
         ]);
 
-        // Enforce group capacity limits
-        $targetGroupId = $data['group_id'] ?? $intern->group_id;
-        $targetGroup = $targetGroupId ? Group::find($targetGroupId) : null;
-
-        if ($targetGroup) {
-            $this->ensureGroupCapacity($targetGroup, $intern->id);
-            $data['department_id'] = $data['department_id'] ?? $targetGroup->department_id;
-        }
+        $targetGroup = Group::forFiliere($data['filiere'], $data['department_id'] ?? $intern->department_id);
+        $this->ensureGroupCapacity($targetGroup, $intern->id);
+        $data['group_id'] = $targetGroup->id;
+        $data['department_id'] = $data['department_id'] ?? $targetGroup->department_id;
 
         $intern->fill($data);
 
@@ -177,6 +172,7 @@ class InternController extends Controller
             $intern->request->update([
                 'period_start' => $intern->start_date,
                 'period_end'   => $intern->end_date,
+                'filiere'      => $targetGroup->filiere,
             ]);
         }
 
@@ -252,10 +248,15 @@ class InternController extends Controller
 
     protected function expireFinishedInterns(): void
     {
-        Intern::where('active', true)
+        $finishedInterns = Intern::where('active', true)
             ->whereNotNull('end_date')
-            ->where('end_date', '<', now()->toDateString())
-            ->update(['active' => false]);
+            ->where('end_date', '<=', now()->toDateString())
+            ->get();
+
+        foreach ($finishedInterns as $intern) {
+            $intern->update(['active' => false]);
+            $this->certificateService->generateForIntern($intern);
+        }
     }
 
     protected function ensureGroupCapacity(?Group $group, ?int $excludeInternId = null): void

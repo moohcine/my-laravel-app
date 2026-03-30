@@ -13,18 +13,19 @@ class TimetableController extends Controller
     {
         $timetables = Timetable::with([
             'group.department',
-            'group.interns.user',
+            'group.currentInterns.user',
         ])->orderBy('group_id')->orderBy('day_of_week')->get();
 
         $groupsCount = Group::count();
         $slotCount = $timetables->count();
+        $groups = Group::orderBy('filiere')->get();
 
-        return view('admin.timetables.index', compact('timetables', 'groupsCount', 'slotCount'));
+        return view('admin.timetables.index', compact('timetables', 'groupsCount', 'slotCount', 'groups'));
     }
 
     public function create()
     {
-        $groups = Group::all();
+        $groups = Group::orderBy('filiere')->get();
 
         return view('admin.timetables.create', compact('groups'));
     }
@@ -41,5 +42,26 @@ class TimetableController extends Controller
         Timetable::create($data);
 
         return redirect()->route('admin.timetables.index')->with('status', __('Timetable entry created.'));
+    }
+
+    public function update(Request $request, Timetable $timetable)
+    {
+        $data = $request->validate([
+            'group_id'   => 'required|exists:groups,id',
+            'day_of_week'=> 'required|in:monday,tuesday,wednesday,thursday,friday,saturday',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time'   => 'nullable|date_format:H:i|after:start_time',
+        ]);
+
+        $timetable->update($data);
+
+        return redirect()->route('admin.timetables.index')->with('status', __('Timetable entry updated.'));
+    }
+
+    public function destroy(Timetable $timetable)
+    {
+        $timetable->delete();
+
+        return redirect()->route('admin.timetables.index');
     }
 }

@@ -28,56 +28,22 @@
 
             <div class="col-md-6">
                 <label class="form-label small text-secondary">{{ __('Department') }}</label>
-                <select name="department_id" class="form-select form-select-sm">
-                    <option value="">—</option>
-                    @foreach ($departments as $dept)
-                        <option value="{{ $dept->id }}" @selected($intern->department_id == $dept->id)>{{ $dept->name }}</option>
-                    @endforeach
-                </select>
+                <input type="text" class="form-control form-control-sm" value="NDC PRO" readonly>
+                <input type="hidden" name="department_id" value="{{ $intern->department_id }}">
             </div>
 
             <div class="col-md-6">
-                <label class="form-label small text-secondary">{{ __('Group') }}</label>
-                <select name="group_id" class="form-select form-select-sm">
-                    <option value="">—</option>
-                    @foreach ($groups as $group)
-                        @php
-                            $count = $group->active_interns_count ?? 0;
-                            $full = $group->max_interns > 0 && $count >= $group->max_interns;
-                            $selectedId = old('group_id', $intern->group_id);
-                            $selected = (int) $selectedId === $group->id;
-                        @endphp
-                        <option
-                            value="{{ $group->id }}"
-                            @selected($selected)
-                            @if($full && !$selected) disabled @endif
-                        >
-                            {{ $group->name }}
-                            ({{ __('group.capacity_status', ['count' => $count, 'capacity' => $group->max_interns]) }})
-                            @if ($full)
-                                – {{ __('group.full_label') }}
-                            @endif
-                        </option>
-                    @endforeach
-                </select>
-                <small class="text-secondary">{{ __('group.capacity_note') }}</small>
+                <label class="form-label small text-secondary">{{ __('Filière (auto-group)') }}</label>
+                <input type="text" name="filiere" value="{{ old('filiere', $intern->group?->filiere ?? $intern->request?->filiere) }}" class="form-control form-control-sm" required readonly>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <label class="form-label small text-secondary">{{ __('Start date') }}</label>
                 <input type="date" name="start_date" value="{{ old('start_date', optional($intern->start_date)->toDateString()) }}" class="form-control form-control-sm">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <label class="form-label small text-secondary">{{ __('End date') }}</label>
                 <input type="date" name="end_date" value="{{ old('end_date', optional($intern->end_date)->toDateString()) }}" class="form-control form-control-sm">
-            </div>
-            <div class="col-md-4 d-flex align-items-center mt-4">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active" {{ $intern->active ? 'checked' : '' }}>
-                    <label class="form-check-label small text-secondary" for="active">
-                        {{ __('Active') }}
-                    </label>
-                </div>
             </div>
 
             <div class="col-12">

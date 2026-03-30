@@ -50,46 +50,18 @@
             </div>
 
             <div class="col-md-6">
-                <label class="form-label small text-secondary">{{ __('Group') }}</label>
-                <select name="group_id" class="form-select form-select-sm">
-                    <option value="">—</option>
-                    @foreach ($groups as $group)
-                        @php
-                            $count = $group->active_interns_count ?? 0;
-                            $full = $group->max_interns > 0 && $count >= $group->max_interns;
-                            $selected = old('group_id') == $group->id;
-                        @endphp
-                        <option
-                            value="{{ $group->id }}"
-                            @selected($selected)
-                            @if($full && !$selected) disabled @endif
-                        >
-                            {{ $group->name }}
-                            ({{ __('group.capacity_status', ['count' => $count, 'capacity' => $group->max_interns]) }})
-                            @if ($full)
-                                – {{ __('group.full_label') }}
-                            @endif
-                        </option>
-                    @endforeach
-                </select>
-                <small class="text-secondary">{{ __('group.capacity_note') }}</small>
+                <label class="form-label small text-secondary">{{ __('Filière (auto-group)') }}</label>
+                <input type="text" name="filiere" value="{{ old('filiere') }}" class="form-control form-control-sm" required>
+                <small class="text-secondary">{{ __('Interns sharing this filière are grouped together automatically.') }}</small>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-6 col-lg-4">
                 <label class="form-label small text-secondary">{{ __('Start date') }}</label>
                 <input type="date" name="start_date" value="{{ old('start_date') }}" class="form-control form-control-sm">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6 col-lg-4">
                 <label class="form-label small text-secondary">{{ __('End date') }}</label>
                 <input type="date" name="end_date" value="{{ old('end_date') }}" class="form-control form-control-sm">
-            </div>
-            <div class="col-md-3 d-flex align-items-center mt-4">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active" checked>
-                    <label class="form-check-label small text-secondary" for="active">
-                        {{ __('Active') }}
-                    </label>
-                </div>
             </div>
 
             <div class="col-12 d-flex justify-content-end mt-3">

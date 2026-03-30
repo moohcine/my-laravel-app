@@ -11,13 +11,33 @@ use Illuminate\Support\Facades\Hash;
 
 class InternAuthController extends Controller
 {
-    public function showLanding()
+    public function showLanding(Request $request)
     {
+        if (Auth::check()) {
+            if (Auth::user()->role === 'intern') {
+                return redirect()->route('intern.dashboard');
+            }
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         return view('intern.landing');
     }
 
-    public function showRegisterForm()
+    public function showRegisterForm(Request $request)
     {
+        if (Auth::check()) {
+            if (Auth::user()->role === 'intern') {
+                return redirect()->route('intern.dashboard');
+            }
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         return view('intern.auth.register');
     }
 
@@ -29,8 +49,7 @@ class InternAuthController extends Controller
             'password'       => 'required|min:8|confirmed',
             'phone'          => 'required|string|max:30',
             'school'         => 'required|string|max:255',
-            'field_of_study' => 'required|string|max:255',
-            'filiere'        => 'nullable|string|max:255',
+            'filiere'        => 'required|string|max:255',
             'period_start'   => 'required|date',
             'period_end'     => 'required|date|after_or_equal:period_start',
             'cv'             => 'required|mimes:pdf|max:2048',
@@ -49,8 +68,7 @@ class InternAuthController extends Controller
             'user_id'        => $user->id,
             'phone'          => $data['phone'],
             'school'         => $data['school'],
-            'field_of_study' => $data['field_of_study'],
-            'filiere'        => $data['filiere'] ?? null,
+            'filiere'        => $data['filiere'],
             'period_start'   => $data['period_start'],
             'period_end'     => $data['period_end'],
             'cv_path'        => $cvPath,
@@ -62,8 +80,18 @@ class InternAuthController extends Controller
             ->with('status', __('Application submitted. Status is now pending approval.'));
     }
 
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+        if (Auth::check()) {
+            if (Auth::user()->role === 'intern') {
+                return redirect()->route('intern.dashboard');
+            }
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         return view('intern.auth.login');
     }
 
@@ -74,7 +102,7 @@ class InternAuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             if (Auth::user()->role !== 'intern') {

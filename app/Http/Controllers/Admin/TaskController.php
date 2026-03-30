@@ -85,8 +85,9 @@ class TaskController extends Controller
     {
         $groups = Group::with([
             'tasks.statuses.user',
-            'interns.user'
-        ])->get();
+            'interns.user',
+            'activeInterns',
+        ])->withCount(['activeInterns as active_interns_count'])->get();
 
         $statistics = [
             'total_tasks' => Task::count(),

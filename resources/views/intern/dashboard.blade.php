@@ -9,9 +9,6 @@
             <h2 class="fw-bold text-white mb-1">{{ __('Welcome, :name', ['name' => $user->name]) }}</h2>
             <p class="text-secondary mb-0 small">{{ __('Monitor your internship status, group, timetable and attendance.') }}</p>
         </div>
-        <a href="{{ route('intern.profile') }}" class="btn btn-sm ndc-btn-primary">
-            <i class="bi bi-person-badge me-1"></i> {{ __('My profile') }}
-        </a>
     </div>
 
     @if (session('status'))
@@ -19,6 +16,26 @@
             {{ session('status') }}
         </div>
     @endif
+
+    @if (!$isActive)
+        <div class="d-flex justify-content-center">
+            <div class="ndc-card p-4 text-center" style="max-width: 480px;">
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <i class="bi bi-award text-info fs-3 me-2"></i>
+                    <h5 class="mb-0 text-white">{{ __('Certificate') }}</h5>
+                </div>
+                @if($certificate)
+                    <p class="text-white mb-1">{{ __('Issued on') }} {{ $certificate->issue_date?->format('d M Y') }}</p>
+                    <p class="small text-secondary mb-3">{{ __('Hours completed:') }} {{ $certificate->hours_completed }}</p>
+                    <a href="{{ route('intern.certificate.download') }}" class="btn ndc-btn-primary btn-sm">
+                        <i class="bi bi-download me-1"></i> {{ __('Download certificate') }}
+                    </a>
+                @else
+                    <p class="small text-secondary mb-0">{{ __('Your certificate will appear after the admin finishes the review.') }}</p>
+                @endif
+            </div>
+        </div>
+    @else
 
     <div class="row g-4 mb-4">
         <div class="col-md-4">
@@ -204,5 +221,6 @@
             </a>
         </div>
     </div>
+@endif
 </div>
 @endsection

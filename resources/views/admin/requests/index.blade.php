@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', __('Internship Requests – NDC PRO'))
 
@@ -46,6 +46,8 @@
                     <th>{{ __('Intern') }}</th>
                     <th>{{ __('Email') }}</th>
                     <th>{{ __('School') }}</th>
+                    <th>{{ __('Group') }}</th>
+                    <th>{{ __('Intern status') }}</th>
                     <th>{{ __('Period') }}</th>
                     <th>{{ __('Status') }}</th>
                     <th class="text-end">{{ __('Actions') }}</th>
@@ -53,10 +55,23 @@
                 </thead>
                 <tbody>
                 @forelse ($requests as $req)
+                    @php $intern = $req->intern; @endphp
                     <tr>
                         <td>{{ $req->user->name }}</td>
                         <td>{{ $req->user->email }}</td>
                         <td class="small text-secondary">{{ $req->school }}</td>
+                        <td class="small text-secondary">
+                            {{ $intern?->group?->name ?? '—' }}
+                        </td>
+                        <td>
+                            @if($intern)
+                                <span class="badge bg-opacity-25 border small {{ $intern->active ? 'bg-success text-success border-success' : 'bg-secondary text-secondary border-secondary' }}">
+                                    {{ $intern->active ? __('Active') : __('Inactive') }}
+                                </span>
+                            @else
+                                <span class="badge bg-opacity-25 border small bg-warning text-warning border-warning">{{ __('Pending onboarding') }}</span>
+                            @endif
+                        </td>
                         <td class="small text-secondary">
                             {{ $req->period_start?->format('d M Y') }} – {{ $req->period_end?->format('d M Y') }}
                         </td>
@@ -76,7 +91,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center small text-secondary py-3">
+                        <td colspan="8" class="text-center small text-secondary py-3">
                             {{ __('No internship requests yet.') }}
                         </td>
                     </tr>

@@ -8,31 +8,41 @@ use App\Models\Department;
 use App\Models\Intern;
 use App\Models\InternshipRequest;
 use App\Models\Timetable;
+use App\Services\GroupCleanupService;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
-    public function index()
+    public function index(GroupCleanupService $cleanup)
     {
         // Mark finished interns as inactive automatically
-        Intern::where('active', true)
+        $toDeactivate = Intern::where('active', true)
             ->whereNotNull('end_date')
-            ->where('end_date', '<', now()->toDateString())
-            ->update(['active' => false]);
+            ->where('end_date', '<', now()->toDateString());
 
-        $totalInterns = Intern::active()->count();
-        $acceptedInterns = InternshipRequest::where('status', 'accepted')
-            ->where(function ($q) {
-                $q->whereNull('period_end')
-                  ->orWhere('period_end', '>=', now()->toDateString());
+        $affectedGroupIds = $toDeactivate->pluck('group_id');
+        $toDeactivate->update(['active' => false]);
+
+        // After deactivation, clean tasks for any groups that are now empty.
+        $cleanup->deleteTasksForGroups($affectedGroupIds);
+
+        // Safety net: ensure no empty groups keep stale tasks.
+        $cleanup->pruneEmptyGroupTasks();
+
+        // Total interns (active + inactive)
+        $totalInterns = Intern::count();
+        $activeInterns = Intern::active()->count();
+        $completedInternships = Intern::whereNotNull('end_date')
+            ->where('end_date', '<', now()->toDateString())
+            ->count();
+        $acceptedInterns = InternshipRequest::where(function ($q) {
+                $q->where('status', 'accepted')
+                  ->orWhereHas('intern');
             })
             ->count();
         $pendingRequests = InternshipRequest::where('status', 'pending')->count();
         $rejectedInterns = InternshipRequest::where('status', 'rejected')->count();
         $totalRequests = InternshipRequest::count();
-
-        $internsPerDept = Department::withCount(['interns as interns_count' => function ($q) {
-            $q->active();
-        }])->get();
 
         $totalPresent = Attendance::where('status', 'present')->count();
         $totalAttendanceRecords = Attendance::count();
@@ -61,9 +71,25 @@ class AdminDashboardController extends Controller
             ? round(($formerInterns / $completionBase) * 100, 1)
             : 0;
         $weeklyAttendanceAverage = $attendanceTrend->avg('rate');
+        $internsPerDept = collect(); // placeholder to satisfy legacy view references
+
+        // Filière chart stats
+        $filiereStats = InternshipRequest::selectRaw("
+                COALESCE(NULLIF(filiere, ''), 'Unknown') as filiere,
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'accepted' THEN 1 ELSE 0 END) as accepted,
+                SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
+                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending
+            ")
+            ->groupBy('filiere')
+            ->havingRaw("COALESCE(NULLIF(filiere, ''), 'Unknown') <> ?", ['full stack'])
+            ->orderBy('filiere')
+            ->get();
 
         return view('admin.dashboard', compact(
             'totalInterns',
+            'activeInterns',
+            'completedInternships',
             'acceptedInterns',
             'pendingRequests',
             'rejectedInterns',
@@ -74,7 +100,8 @@ class AdminDashboardController extends Controller
             'attendanceTrend',
             'totalRequests',
             'completionRate',
-            'weeklyAttendanceAverage'
+            'weeklyAttendanceAverage',
+            'filiereStats'
         ));
     }
 }

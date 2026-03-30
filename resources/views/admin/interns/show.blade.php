@@ -54,11 +54,8 @@
                         </p>
                     </div>
                     <div class="col-sm-6">
-                        <p class="small mb-1 text-secondary">{{ __('Field of study:') }}
-                            <span class="fw-semibold text-white">{{ $intern->request?->field_of_study ?? '—' }}</span>
-                        </p>
                         <p class="small mb-1 text-secondary">{{ __('Filière:') }}
-                            <span class="fw-semibold text-white">{{ $intern->request?->filiere ?? '—' }}</span>
+                            <span class="fw-semibold text-white">{{ $intern->group?->filiere ?? $intern->request?->filiere ?? '—' }}</span>
                         </p>
                         <p class="small mb-1 text-secondary">{{ __('Department:') }}
                             <span class="fw-semibold text-white">{{ $intern->department?->name ?? '—' }}</span>
@@ -148,6 +145,11 @@
                 <div class="mb-2">
                     @if($intern->certificate)
                         <span class="badge bg-success bg-opacity-25 text-success border border-success small">{{ __('Issued') }}</span>
+                        @if($intern->certificate->pdf_path)
+                            <a href="{{ route('admin.interns.certificate.download', $intern) }}" class="btn btn-outline-info btn-sm ms-2">
+                                <i class="bi bi-filetype-pdf me-1"></i>{{ __('Download PDF') }}
+                            </a>
+                        @endif
                     @else
                         <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary small">{{ __('Draft') }}</span>
                     @endif

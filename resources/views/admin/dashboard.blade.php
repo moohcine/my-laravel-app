@@ -99,6 +99,18 @@
                 </div>
             </a>
         </div>
+        <div class="col-md-3">
+            <a class="text-decoration-none" href="{{ route('admin.attendance.index') }}">
+                <div class="ndc-card p-3 h-100">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small text-secondary">{{ __('Manage attendance') }}</span>
+                        <i class="bi bi-clipboard-check text-info"></i>
+                    </div>
+                    <div class="h4 text-white mb-0">{{ $attendanceRate }}%</div>
+                    <div class="small text-secondary">{{ __('Attendance rate') }}</div>
+                </div>
+            </a>
+        </div>
     </div>
 
     <div class="row g-4 mb-4">
@@ -108,7 +120,7 @@
                     $funnelStages = collect([
                         ['label' => __('Requests'), 'value' => $totalRequests, 'description' => __('recruitment_funnel.requests_desc')],
                         ['label' => __('Accepted'), 'value' => $acceptedInterns, 'description' => __('recruitment_funnel.accepted_desc')],
-                        ['label' => __('Onboarded'), 'value' => $totalInterns, 'description' => __('recruitment_funnel.onboarded_desc')],
+                        ['label' => __('Onboarded'), 'value' => $activeInterns, 'description' => __('recruitment_funnel.onboarded_desc')],
                     ]);
                     $maxFunnel = max($funnelStages->max(fn($stage) => $stage['value']) ?? 1, 1);
                     $pointDivider = max($attendanceTrend->count() - 1, 1);
@@ -174,86 +186,18 @@
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-lg-7">
-            <div class="ndc-card p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0 text-white">{{ __('Interns per department') }}</h5>
-                    <a href="{{ route('admin.interns.index') }}" class="small text-info text-decoration-none">
-                        {{ __('View interns') }} <i class="bi bi-arrow-right-short"></i>
-                    </a>
-                </div>
-                <div class="departments-grid">
-                    @forelse ($internsPerDept as $dept)
-                        <div class="department-card">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <div class="small text-secondary text-uppercase">{{ __('Department') }}</div>
-                                    <div class="h6 mb-0 text-white">{{ $dept->name }}</div>
-                                </div>
-                                <div class="badge bg-secondary bg-opacity-15 text-white border border-secondary border-opacity-25 px-3 py-1">
-                                    {{ $dept->interns_count }} {{ __('Interns') }}
-                                </div>
-                            </div>
-                            <div class="small text-secondary">
-                                {{ __('Active interns currently assigned.') }}
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-center small text-secondary py-4">
-                            {{ __('No departments defined yet.') }}
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-5">
-            <div class="ndc-card p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0 text-white">{{ __('Intern attendance rate') }}</h5>
-                    <a href="{{ route('admin.attendance.index') }}" class="small text-info text-decoration-none">
-                        {{ __('Manage attendance') }} <i class="bi bi-arrow-right-short"></i>
-                    </a>
-                </div>
-                <div class="d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                    <div class="text-center">
-                        <div class="display-5 fw-bold text-info mb-1">{{ $attendanceRate }}%</div>
-                        <div class="small text-secondary">{{ __('Average presence based on recorded days.') }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4 mt-1">
+    <div class="row g-4 mb-4">
         <div class="col-12">
-            <div class="ndc-card p-4">
+            <div class="ndc-card p-4 h-100">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h5 class="mb-1 text-white">{{ __('Department statistics') }}</h5>
-                        <p class="small text-secondary mb-0">{{ __('Visualize intern distribution by department and status.') }}</p>
+                        <p class="small text-secondary text-uppercase mb-1">{{ __('Internship status by filière') }}</p>
+                        <h6 class="mb-0 text-white">{{ __('Internship distribution') }}</h6>
                     </div>
+                    <span class="small text-secondary">{{ __('Accepted vs Rejected vs Pending') }}</span>
                 </div>
-                <div class="row g-3">
-                    <div class="col-lg-7">
-                        <canvas id="deptChart" height="140"></canvas>
-                    </div>
-                    <div class="col-lg-5">
-                        <div class="ndc-card p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="small text-secondary">{{ __('Accepted') }}</span>
-                                <span class="fw-semibold text-success">{{ $acceptedInterns }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <span class="small text-secondary">{{ __('Pending') }}</span>
-                                <span class="fw-semibold text-warning">{{ $pendingRequests }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <span class="small text-secondary">{{ __('Rejected') }}</span>
-                                <span class="fw-semibold text-danger">{{ $rejectedInterns }}</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="chart-wrapper-sm">
+                    <canvas id="filiereChart"></canvas>
                 </div>
             </div>
         </div>
@@ -262,31 +206,36 @@
     <div class="row g-4 mt-2" id="attendance-trend-curve">
         <div class="col-12">
             <div class="ndc-card p-4 simple-curve">
-                <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3">
                     <div>
-                        <h5 class="mb-0 text-white">{{ __('Attendance trend') }}</h5>
+                        <h5 class="mb-0 text-dark">{{ __('Attendance trend') }}</h5>
                         <p class="small text-secondary mb-0">{{ __('Weekly attendance rates') }}</p>
                     </div>
-                    <span class="badge bg-light text-dark">{{ __('Weekly') }}</span>
+                    <span class="badge bg-light text-dark shadow-sm">{{ __('Weekly') }}</span>
                 </div>
                 @php
                     $count = max($attendanceTrend->count(), 1);
-                    $points = $attendanceTrend->map(function ($point, $index) use ($count) {
+                    $curvePoints = $attendanceTrend->map(function ($point, $index) use ($count) {
                         $x = $count === 1 ? 50 : ($index / ($count - 1)) * 100;
                         $rate = min(max($point['rate'], 0), 100);
                         $y = 35 - ($rate / 100) * 30;
-                        return "{$x},{$y}";
-                    })->implode(' ');
+                        return ['x' => $x, 'y' => $y, 'label' => $point['label'], 'rate' => $rate];
+                    });
+                    $polyPoints = $curvePoints->map(fn($p) => "{$p['x']},{$p['y']}")->implode(' ');
+                    $areaPoints = "0,40 {$polyPoints} 100,40";
                 @endphp
                 <div class="curve-chart">
                     <svg viewBox="0 0 100 40" preserveAspectRatio="none">
-                        <polyline points="{{ $points }}" stroke="rgba(59,130,246,0.9)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                        <polyline points="{{ $points }}" stroke="rgba(59,130,246,0.2)" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <polygon points="{{ $areaPoints }}" fill="rgba(96,165,250,0.15)"/>
+                        <polyline points="{{ $polyPoints }}" stroke="#3b82f6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        @foreach ($curvePoints as $point)
+                            <circle cx="{{ $point['x'] }}" cy="{{ $point['y'] }}" r="1.3" fill="#f9fbff" stroke="#3b82f6" stroke-width="0.9"/>
+                        @endforeach
                     </svg>
                 </div>
-                <div class="d-flex justify-content-between small text-secondary mt-3">
-                    @foreach ($attendanceTrend as $item)
-                        <span>{{ $item['label'] }}: {{ $item['rate'] }}%</span>
+                <div class="d-flex justify-content-between text-secondary mt-3 px-1">
+                    @foreach ($curvePoints as $item)
+                        <span class="small">{{ $item['label'] }}: {{ $item['rate'] }}%</span>
                     @endforeach
                 </div>
             </div>
@@ -298,17 +247,19 @@
 @push('styles')
 <style>
     .simple-curve {
-        background: transparent;
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 1rem;
+        background: #f9fbff;
+        border: 1px solid #edf2f7;
+        border-radius: 1.2rem;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+        color: #0f172a;
     }
     .curve-chart {
-        padding: 0.75rem;
-        border-radius: 0.7rem;
+        padding: 0.5rem 0.75rem 0.25rem;
+        border-radius: 0.9rem;
     }
     .curve-chart svg {
         width: 100%;
-        height: 140px;
+        height: 170px;
     }
     .clickable-sparkline {
         cursor: pointer;
@@ -346,33 +297,16 @@
         width: 100%;
         height: 80px;
     }
+    .chart-wrapper-sm {
+        height: clamp(180px, 32vw, 260px);
+    }
+    .chart-wrapper-sm canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
     @media (max-width: 991px) {
         .kpi-feed .funnel-stage {
             min-width: calc(33% - 0.5rem);
-        }
-    }
-    .departments-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-    }
-    .department-card {
-        padding: 1.1rem 1.25rem;
-        border-radius: 1.15rem;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.02);
-        min-height: 130px;
-    }
-    .department-card h6 {
-        font-size: 1rem;
-        letter-spacing: 0.01em;
-    }
-    .department-card .badge {
-        font-size: 0.75rem;
-    }
-    @media (max-width: 767px) {
-        .departments-grid {
-            grid-template-columns: 1fr;
         }
     }
 </style>
@@ -382,37 +316,37 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('deptChart');
-    if (!ctx) return;
+    const filiereCtx = document.getElementById('filiereChart');
+    if (filiereCtx) {
+        const labels = @json($filiereStats->pluck('filiere'));
+        const acceptedData = @json($filiereStats->pluck('accepted'));
+        const rejectedData = @json($filiereStats->pluck('rejected'));
+        const pendingData = @json($filiereStats->pluck('pending'));
 
-    const labels = @json($internsPerDept->pluck('name'));
-    const data = @json($internsPerDept->pluck('interns_count'));
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                label: @json(__('Interns')),
-                data,
-                backgroundColor: 'rgba(37, 99, 235, 0.6)',
-                borderColor: 'rgba(37, 99, 235, 0.9)',
-                borderWidth: 1,
-                borderRadius: 6,
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { backgroundColor: '#0f172a' }
+        new Chart(filiereCtx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    { label: @json(__('Accepted')), data: acceptedData, backgroundColor: 'rgba(34,197,94,0.8)' },
+                    { label: @json(__('Rejected')), data: rejectedData, backgroundColor: 'rgba(239,68,68,0.8)' },
+                    { label: @json(__('Pending')), data: pendingData, backgroundColor: 'rgba(234,179,8,0.9)' },
+                ],
             },
-            scales: {
-                x: { grid: { display: false } },
-                y: { beginAtZero: true, ticks: { stepSize: 1 } }
-            }
-        }
-    });
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: false, grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                },
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { backgroundColor: '#0f172a' },
+                },
+            },
+        });
+    }
 
     const sparkline = document.querySelector('.clickable-sparkline');
     const targetCurve = document.getElementById('attendance-trend-curve');

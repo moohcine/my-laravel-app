@@ -32,10 +32,6 @@
                     <span class="fw-semibold text-white">{{ $request->school }}</span>
                 </div>
                 <div class="mb-2 small">
-                    <span class="text-secondary">{{ __('Field of study:') }}</span>
-                    <span class="fw-semibold text-white">{{ $request->field_of_study }}</span>
-                </div>
-                <div class="mb-2 small">
                     <span class="text-secondary">{{ __('Filière:') }}</span>
                     <span class="fw-semibold text-white">{{ $request->filiere ?? '—' }}</span>
                 </div>

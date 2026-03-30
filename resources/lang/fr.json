@@ -78,8 +78,6 @@
     "End": "Fin",
     "End date": "Date de fin",
     "End time": "Heure de fin",
-    "Field of study": "Domaine d'étude",
-    "Field of study:": "Domaine d'étude :",
     "Fili–re": "",
     "Fili–re:": "",
     "Fill in your information and upload your CV (PDF). Your application will appear as": "Remplissez vos informations et téléversez votre CV (PDF). Votre candidature apparaîtra comme",
@@ -194,6 +192,7 @@
     "Profile": "Profil",
     "Rank #:rank": "Rang n°:rank",
     "Register": "S'inscrire",
+    "Remember me": "Se souvenir de moi",
     "Register your internship application or login to follow your approval status, group assignment and timetable.": "Inscrivez votre candidature ou connectez-vous pour suivre votre statut, votre affectation et votre planning.",
     "Reject request": "Rejeter la demande",
     "Rejected": "Rejeté",
@@ -301,5 +300,7 @@
     "View tasks": "Voir les tâches",
     "View your tasks": "Voir vos tâches",
     "See the tasks your group is working on and mark them as completed when done.": "Consultez les tâches de votre groupe et marquez-les comme terminées quand elles sont faites.",
-    "Due date": "Date limite"
+    "Due date": "Date limite",
+    "certificate.default_message": "Je tiens Ã  exprimer ma profonde gratitude et mes sincÃ¨res remerciements Ã  toutes les personnes qui ont contribuÃ©, de prÃ¨s ou de loin, Ã  la rÃ©alisation de ce travail. Leur soutien constant, leurs efforts considÃ©rables et leur engagement ont jouÃ© un rÃ´le essentiel dans lâ€™aboutissement de ce projet. Leur esprit de collaboration, leur professionnalisme et leur dÃ©vouement ont Ã©tÃ© une vÃ©ritable source de motivation tout au long de ce parcours. Je tiens Ã  valoriser le temps et lâ€™Ã©nergie quâ€™ils ont investis, et jâ€™espÃ¨re pouvoir continuer Ã  partager avec eux de futures rÃ©ussites. Je leur souhaite beaucoup de succÃ¨s et dâ€™Ã©panouissement dans leurs projets Ã  venir.",
+    "certificate.default_note": "BON"
 }

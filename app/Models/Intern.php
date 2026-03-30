@@ -68,4 +68,15 @@ class Intern extends Model
                     ->orWhere('end_date', '>=', now()->toDateString());
             });
     }
+
+    /**
+     * Current = explicitly active OR end_date still in the future.
+     */
+    public function scopeCurrent(Builder $query): Builder
+    {
+        return $query->where(function ($q) {
+            $q->where('active', true)
+              ->orWhere('end_date', '>', now()->toDateString());
+        });
+    }
 }

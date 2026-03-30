@@ -76,6 +76,11 @@
     <a href="{{ route('intern.dashboard') }}" class="btn ndc-btn ndc-btn-outline me-2">
         {{ __('Back to dashboard') }}
     </a>
+    @if($certificate->pdf_path)
+        <a href="{{ route('intern.certificate.download') }}" class="btn ndc-btn ndc-btn-outline me-2">
+            {{ __('Download PDF') }}
+        </a>
+    @endif
     <button onclick="window.print()" class="btn ndc-btn ndc-btn-primary">
         {{ __('Print certificate') }}
     </button>

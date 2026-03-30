@@ -8,8 +8,19 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminAuthController extends Controller
 {
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+        if (Auth::check()) {
+            if (Auth::user()->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            // Different role logged in: end session and show admin login
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         return view('admin.auth.login');
     }
 
@@ -20,7 +31,7 @@ class AdminAuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             if (!Auth::user()->isAdmin()) {

@@ -16,7 +16,10 @@ class DemoDataSeeder extends Seeder
         $groups = Group::with('department')->get();
 
         if ($groups->isEmpty()) {
-            return;
+            $groups = collect([
+                Group::forFiliere('Software Engineering'),
+                Group::forFiliere('Network'),
+            ]);
         }
 
         // Generate a handful of demo interns + requests
@@ -37,7 +40,6 @@ class DemoDataSeeder extends Seeder
                 [
                     'phone'          => '0600' . str_pad((string) $i, 6, '0', STR_PAD_LEFT),
                     'school'         => 'Tech University',
-                    'field_of_study' => 'Computer Science',
                     'filiere'        => 'Software Engineering',
                     'period_start'   => now()->addDays($i)->toDateString(),
                     'period_end'     => now()->addDays($i + 60)->toDateString(),

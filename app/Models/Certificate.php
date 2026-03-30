@@ -18,6 +18,7 @@ class Certificate extends Model
         'signed_by',
         'notes',
         'message',
+        'pdf_path',
     ];
 
     protected $casts = [

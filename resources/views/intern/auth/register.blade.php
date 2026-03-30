@@ -59,12 +59,8 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">{{ __('Field of study') }}</label>
-                            <input type="text" name="field_of_study" value="{{ old('field_of_study') }}" class="form-control form-control-sm" required>
-                        </div>
-                        <div class="col-md-6">
                             <label class="form-label">{{ __('Filière') }}</label>
-                            <input type="text" name="filiere" value="{{ old('filiere') }}" class="form-control form-control-sm">
+                            <input type="text" name="filiere" value="{{ old('filiere') }}" class="form-control form-control-sm" required>
                         </div>
 
                         <div class="col-md-6">

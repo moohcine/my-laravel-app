@@ -44,15 +44,11 @@
                         {{ __('Track total interns, pending requests, and attendance rate in real time.') }}
                     </p>
                     <div class="row text-center g-3">
-                        <div class="col-4">
+                        <div class="col-6">
                             <div class="small text-secondary">{{ __('Interns') }}</div>
                             <div class="h4 fw-bold text-white">{{ $totalInterns }}</div>
                         </div>
-                        <div class="col-4">
-                            <div class="small text-secondary">{{ __('Pending') }}</div>
-                            <div class="h4 fw-bold text-warning">{{ $pendingRequests }}</div>
-                        </div>
-                        <div class="col-4">
+                        <div class="col-6">
                             <div class="small text-secondary">{{ __('Attendance') }}</div>
                             <div class="h4 fw-bold text-info">{{ $attendanceRate }}%</div>
                         </div>

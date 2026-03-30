@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Intern;
 
 class InternshipRequest extends Model
 {
@@ -14,7 +16,6 @@ class InternshipRequest extends Model
         'user_id',
         'phone',
         'school',
-        'field_of_study',
         'filiere',
         'period_start',
         'period_end',
@@ -40,5 +41,9 @@ class InternshipRequest extends Model
     {
         return $this->belongsTo(User::class, 'reviewed_by');
     }
-}
 
+    public function intern(): HasOne
+    {
+        return $this->hasOne(Intern::class);
+    }
+}

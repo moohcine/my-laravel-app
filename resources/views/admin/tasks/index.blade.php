@@ -4,6 +4,12 @@
 
 @section('content')
 <div class="container py-4 py-md-5">
+    <div class="d-flex justify-content-start mb-2">
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-link text-decoration-none p-0">
+            <i class="bi bi-arrow-left"></i> {{ __('Back to dashboard') }}
+        </a>
+    </div>
+
     <div id="task-stats">
         @include('admin.tasks.partials.stats')
     </div>
