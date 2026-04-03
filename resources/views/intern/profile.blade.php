@@ -69,10 +69,10 @@
                     {{ __('Present days:') }}
                     <span class="fw-semibold text-white">{{ $attendanceCount }}</span>
                 </p>
-                @if($totalDays)
-                    @php $rate = round(($attendanceCount / $totalDays) * 100, 1); @endphp
+                @if($totalAttendanceRecords > 0)
+                    @php $rate = round(($attendanceCount / $totalAttendanceRecords) * 100, 1); @endphp
                     <p class="small text-secondary mb-0 mt-2">
-                        {{ __('Approx. attendance rate:') }}
+                        {{ __('Attendance performance:') }}
                         <span class="fw-semibold text-info">{{ $rate }}%</span>
                     </p>
                 @endif
@@ -96,7 +96,7 @@
                         {{ __('Group:') }} <span class="fw-semibold text-white">{{ $intern->group->name }}</span>
                     </p>
                     <p class="small text-secondary mb-1">
-                        {{ __('Department:') }} <span class="fw-semibold text-white">{{ $intern->department?->name ?? '—' }}</span>
+                        {{ __('Department:') }} <span class="fw-semibold text-white">{{ $intern->department ?? '—' }}</span>
                     </p>
                     <p class="small text-secondary mb-0">
                         {{ __('Capacity note: Group size :count interns.', ['count' => $intern->group->max_interns]) }}

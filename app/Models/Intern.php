@@ -15,7 +15,7 @@ class Intern extends Model
     protected $fillable = [
         'user_id',
         'internship_request_id',
-        'department_id',
+        'department',
         'group_id',
         'start_date',
         'end_date',
@@ -40,10 +40,7 @@ class Intern extends Model
         return $this->belongsTo(InternshipRequest::class, 'internship_request_id');
     }
 
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class);
-    }
+
 
     public function group(): BelongsTo
     {

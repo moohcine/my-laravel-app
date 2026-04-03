@@ -58,7 +58,7 @@
                             <span class="fw-semibold text-white">{{ $intern->group?->filiere ?? $intern->request?->filiere ?? '—' }}</span>
                         </p>
                         <p class="small mb-1 text-secondary">{{ __('Department:') }}
-                            <span class="fw-semibold text-white">{{ $intern->department?->name ?? '—' }}</span>
+                            <span class="fw-semibold text-white">{{ $intern->department ?? '—' }}</span>
                         </p>
                         <p class="small mb-1 text-secondary">{{ __('Group:') }}
                             <span class="fw-semibold text-white">{{ $intern->group?->name ?? '—' }}</span>

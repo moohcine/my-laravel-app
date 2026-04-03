@@ -35,7 +35,7 @@
                             <div class="fw-semibold text-white">{{ $group->filiere }}</div>
                             <div class="small text-secondary">{{ $group->name }}</div>
                         </td>
-                        <td class="small text-secondary">{{ $group->department?->name ?? '—' }}</td>
+                        <td class="small text-secondary">{{ $group->department ?? '—' }}</td>
                         <td class="small text-secondary">{{ $group->max_interns }}</td>
                         <td class="small text-secondary">
                             @php

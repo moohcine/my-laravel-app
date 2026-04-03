@@ -10,8 +10,7 @@ class GroupController extends Controller
 {
     public function index()
     {
-        $groups = Group::with('department')
-            ->withCount('activeInterns')
+        $groups = Group::withCount('activeInterns')
             ->orderBy('filiere')
             ->paginate(10);
 
@@ -31,7 +30,6 @@ class GroupController extends Controller
     public function show(Group $group)
     {
         $group->load([
-            'department',
             'timetables',
             'activeInterns.user',
         ]);

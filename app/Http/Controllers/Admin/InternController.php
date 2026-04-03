@@ -32,7 +32,7 @@ class InternController extends Controller
         }
         $direction = strtolower($direction) === 'asc' ? 'asc' : 'desc';
 
-        $query = Intern::with(['user', 'group', 'department'])
+        $query = Intern::with(['user', 'group'])
             ->where(function ($q) {
                 $q->where('active', true)
                   ->orWhereNull('end_date')
@@ -59,7 +59,7 @@ class InternController extends Controller
 
         $interns = $query->paginate(10)->withQueryString();
 
-        $inactiveInterns = Intern::with(['user', 'group', 'department'])
+        $inactiveInterns = Intern::with(['user', 'group'])
             ->where(function ($q) {
                 $q->where('active', false)
                   ->orWhere(function ($sub) {
@@ -87,7 +87,7 @@ class InternController extends Controller
             'name'          => 'required|string|max:255',
             'email'         => 'required|email|unique:users,email',
             'password'      => 'required|string|min:8',
-            'department_id' => 'nullable|exists:departments,id',
+
             'filiere'       => 'required|string|max:255',
             'start_date'    => 'nullable|date',
             'end_date'      => 'nullable|date|after_or_equal:start_date',
@@ -102,12 +102,12 @@ class InternController extends Controller
                 'role'     => 'intern',
             ]);
 
-        $group = Group::forFiliere($data['filiere'], $data['department_id'] ?? null);
+        $group = Group::forFiliere($data['filiere']);
         $this->ensureGroupCapacity($group);
 
             $intern = new Intern();
             $intern->user_id = $user->id;
-            $intern->department_id = $data['department_id'] ?? $group->department_id;
+
             $intern->group_id = $group->id;
             $intern->start_date = $data['start_date'] ?? null;
             $intern->end_date = $data['end_date'] ?? null;
@@ -128,7 +128,6 @@ class InternController extends Controller
         $intern->load([
             'user',
             'group.timetables',
-            'department',
             'attendances' => fn ($q) => $q->orderByDesc('date'),
             'request',
             'certificate',
@@ -147,7 +146,7 @@ class InternController extends Controller
     public function update(Request $request, Intern $intern)
     {
         $data = $request->validate([
-            'department_id' => 'nullable|exists:departments,id',
+
             'filiere'       => 'required|string|max:255',
             'start_date'    => 'nullable|date',
             'end_date'      => 'nullable|date|after_or_equal:start_date',
@@ -155,10 +154,9 @@ class InternController extends Controller
             'admin_note'    => 'nullable|string|max:2000',
         ]);
 
-        $targetGroup = Group::forFiliere($data['filiere'], $data['department_id'] ?? $intern->department_id);
+        $targetGroup = Group::forFiliere($data['filiere']);
         $this->ensureGroupCapacity($targetGroup, $intern->id);
         $data['group_id'] = $targetGroup->id;
-        $data['department_id'] = $data['department_id'] ?? $targetGroup->department_id;
 
         $intern->fill($data);
 
@@ -192,7 +190,7 @@ class InternController extends Controller
         $cohortStart = $request->query('cohort_start');
         $cohortEnd = $request->query('cohort_end');
 
-        $formerInterns = Intern::with(['user', 'department', 'group'])
+        $formerInterns = Intern::with(['user', 'group'])
             ->whereNotNull('end_date')
             ->where('end_date', '<', now()->toDateString())
             ->when($cohortStart, fn($q) => $q->whereDate('start_date', '>=', $cohortStart))
@@ -210,7 +208,7 @@ class InternController extends Controller
         $cohortStart = $request->query('cohort_start');
         $cohortEnd = $request->query('cohort_end');
 
-        $formerInternsQuery = Intern::with(['user', 'department', 'group'])
+        $formerInternsQuery = Intern::with(['user', 'group'])
             ->whereNotNull('end_date')
             ->where('end_date', '<', now()->toDateString())
             ->when($cohortStart, fn($q) => $q->whereDate('start_date', '>=', $cohortStart))
@@ -231,7 +229,7 @@ class InternController extends Controller
                     fputcsv($handle, [
                         $intern->user->name,
                         $intern->user->email,
-                        $intern->department?->name ?? 'N/A',
+                        $intern->department ?? 'N/A',
                         $intern->group?->name ?? 'N/A',
                         $intern->start_date?->toDateString() ?? 'N/A',
                         $intern->end_date?->toDateString() ?? 'N/A',

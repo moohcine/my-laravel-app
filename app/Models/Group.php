@@ -15,7 +15,7 @@ class Group extends Model
     protected $fillable = [
         'name',
         'filiere',
-        'department_id',
+        'department',
         'max_interns',
         'days_of_week',
         'color',
@@ -26,10 +26,7 @@ class Group extends Model
         'days_of_week' => 'array',
     ];
 
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class);
-    }
+
 
     public function interns(): HasMany
     {
@@ -56,7 +53,7 @@ class Group extends Model
         return $this->interns()->current();
     }
 
-    public static function forFiliere(string $filiere, ?int $departmentId = null): self
+    public static function forFiliere(string $filiere): self
     {
         $normalized = trim($filiere) !== '' ? trim($filiere) : 'General';
 
@@ -64,7 +61,6 @@ class Group extends Model
             ['filiere' => $normalized],
             [
                 'name'          => Str::title($normalized),
-                'department_id' => $departmentId,
                 'max_interns'   => 100, // generous default, since grouping is now auto by filiere
             ]
         );

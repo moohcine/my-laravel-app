@@ -29,7 +29,6 @@
             <div class="col-md-6">
                 <label class="form-label small text-secondary">{{ __('Department') }}</label>
                 <input type="text" class="form-control form-control-sm" value="NDC PRO" readonly>
-                <input type="hidden" name="department_id" value="{{ $intern->department_id }}">
             </div>
 
             <div class="col-md-6">

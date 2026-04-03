@@ -65,7 +65,7 @@ class InternshipRequestController extends Controller
             [
                 'internship_request_id' => $request->id,
                 'group_id'              => $group->id,
-                'department_id'         => $group->department_id,
+
                 'start_date'            => $request->period_start,
                 'end_date'              => $request->period_end,
                 'duration_days'         => $request->period_start && $request->period_end

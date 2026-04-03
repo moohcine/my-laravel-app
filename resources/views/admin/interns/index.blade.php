@@ -71,7 +71,7 @@
                                 {{ __('School:') }} {{ $intern->request?->school ?? __('N/A') }}
                             </div>
                         </td>
-                        <td class="small text-secondary">{{ $intern->department?->name ?? '—' }}</td>
+                        <td class="small text-secondary">{{ $intern->department ?? '—' }}</td>
                         <td class="small text-secondary">{{ $intern->group?->name ?? '—' }}</td>
                         <td class="small text-secondary">{{ optional($intern->start_date)->format('d M Y') ?? '—' }}</td>
                         <td class="small text-secondary">{{ optional($intern->end_date)->format('d M Y') ?? '—' }}</td>
@@ -133,7 +133,7 @@
                                     <div class="fw-semibold">{{ $inactive->user->name }}</div>
                                     <div class="small text-muted">{{ $inactive->user->email }}</div>
                                 </td>
-                                <td class="small text-muted">{{ $inactive->department?->name ?? '—' }}</td>
+                                <td class="small text-muted">{{ $inactive->department ?? '—' }}</td>
                                 <td class="small text-muted">{{ $inactive->group?->name ?? '—' }}</td>
                                 <td class="small text-muted">{{ optional($inactive->end_date)->format('d M Y') ?? '—' }}</td>
                                 <td class="text-end">

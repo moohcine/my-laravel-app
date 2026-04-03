@@ -12,7 +12,6 @@ class TimetableController extends Controller
     public function index()
     {
         $timetables = Timetable::with([
-            'group.department',
             'group.currentInterns.user',
         ])->orderBy('group_id')->orderBy('day_of_week')->get();
 

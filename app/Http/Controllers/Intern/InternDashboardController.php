@@ -13,7 +13,7 @@ class InternDashboardController extends Controller
         $user = Auth::user();
         $request = $user->internshipRequests()->latest()->first();
         $intern = Intern::where('user_id', $user->id)
-            ->with(['group.timetables', 'group.interns.user', 'department', 'attendances'])
+            ->with(['group.timetables', 'group.currentInterns.user', 'attendances'])
             ->first();
 
         $isActive = false;
@@ -22,9 +22,10 @@ class InternDashboardController extends Controller
         }
 
         $attendanceCount = $intern?->attendances()->where('status', 'present')->count() ?? 0;
+        $totalAttendanceRecords = $intern?->attendances()->count() ?? 0;
         $totalDays = $intern?->duration_days ?? null;
         $timetable = $intern?->group?->timetables?->groupBy('day_of_week') ?? collect();
-        $groupMembers = $intern?->group?->interns?->where('id', '!=', $intern->id) ?? collect();
+        $groupMembers = $intern?->group?->currentInterns?->where('id', '!=', $intern->id) ?? collect();
         $certificate = $intern?->certificate;
 
         return view('intern.dashboard', [
@@ -33,6 +34,7 @@ class InternDashboardController extends Controller
             'intern'          => $intern,
             'isActive'        => $isActive,
             'attendanceCount' => $attendanceCount,
+            'totalAttendanceRecords' => $totalAttendanceRecords,
             'totalDays'       => $totalDays,
             'timetable'       => $timetable,
             'groupMembers'    => $groupMembers,
@@ -45,10 +47,11 @@ class InternDashboardController extends Controller
         $user = Auth::user();
         $request = $user->internshipRequests()->latest()->first();
         $intern = Intern::where('user_id', $user->id)
-            ->with(['group', 'department', 'attendances'])
+            ->with(['group', 'attendances'])
             ->first();
 
         $attendanceCount = $intern?->attendances()->where('status', 'present')->count() ?? 0;
+        $totalAttendanceRecords = $intern?->attendances()->count() ?? 0;
         $totalDays = $intern?->duration_days ?? null;
         $groupMembers = $intern?->group?->interns?->where('id', '!=', $intern->id) ?? collect();
 
@@ -57,6 +60,7 @@ class InternDashboardController extends Controller
             'request'         => $request,
             'intern'          => $intern,
             'attendanceCount' => $attendanceCount,
+            'totalAttendanceRecords' => $totalAttendanceRecords,
             'totalDays'       => $totalDays,
             'groupMembers'    => $groupMembers,
         ]);

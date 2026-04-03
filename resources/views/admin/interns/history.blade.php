@@ -61,7 +61,7 @@
                     <tr>
                         <td>{{ $intern->user->name }}</td>
                         <td class="small text-secondary">{{ $intern->user->email }}</td>
-                        <td class="small text-secondary">{{ $intern->department?->name ?? '—' }}</td>
+                        <td class="small text-secondary">{{ $intern->department ?? '—' }}</td>
                         <td class="small text-secondary">{{ $intern->group?->name ?? '—' }}</td>
                         <td class="small text-secondary">{{ $intern->start_date?->format('d M Y') ?? '—' }}</td>
                         <td class="small text-secondary">{{ $intern->end_date?->format('d M Y') ?? '—' }}</td>

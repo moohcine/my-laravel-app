@@ -17,7 +17,7 @@
                 <h5 class="text-white mb-1">{{ $group->filiere }}</h5>
                 <p class="text-secondary small mb-3">{{ __('Auto-generated group based on filière') }}</p>
                 <p class="small text-secondary mb-1">
-                    {{ __('Department:') }} <span class="fw-semibold text-white">{{ $group->department?->name ?? '—' }}</span>
+                    {{ __('Department:') }} <span class="fw-semibold text-white">{{ $group->department ?? '—' }}</span>
                 </p>
                 <p class="small text-secondary mb-1">
                     {{ __('Max interns:') }} <span class="fw-semibold text-white">{{ $group->max_interns }}</span>

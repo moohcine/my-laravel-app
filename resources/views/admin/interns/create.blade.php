@@ -41,12 +41,7 @@
 
             <div class="col-md-6">
                 <label class="form-label small text-secondary">{{ __('Department') }}</label>
-                <select name="department_id" class="form-select form-select-sm">
-                    <option value="">—</option>
-                    @foreach ($departments as $dept)
-                        <option value="{{ $dept->id }}" @selected(old('department_id') == $dept->id)>{{ $dept->name }}</option>
-                    @endforeach
-                </select>
+                <input type="text" class="form-control form-control-sm" value="NDC PRO" readonly>
             </div>
 
             <div class="col-md-6">

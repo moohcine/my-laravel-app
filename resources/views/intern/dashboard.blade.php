@@ -95,12 +95,12 @@
                 <div class="h5 mb-1 text-white">
                     {{ $attendanceCount }} <span class="small text-secondary">{{ __('days present') }}</span>
                 </div>
-                @if ($totalDays)
+                @if ($totalAttendanceRecords > 0)
                     @php
-                        $attendanceRate = $totalDays > 0 ? round(($attendanceCount / $totalDays) * 100, 1) : 0;
+                        $attendanceRate = round(($attendanceCount / $totalAttendanceRecords) * 100, 1);
                     @endphp
                     <div class="small text-secondary">
-                        {{ __('Approx. attendance rate:') }}
+                        {{ __('Attendance performance:') }}
                         <span class="fw-semibold text-info">{{ $attendanceRate }}%</span>
                     </div>
                 @endif
@@ -122,7 +122,7 @@
                     <p class="mb-1 small text-secondary">
                         {{ __('Department:') }}
                         <span class="fw-semibold text-white">
-                            {{ $intern->department?->name ?? '—' }}
+                            {{ $intern->department ?? '—' }}
                         </span>
                     </p>
                     <div class="mt-3">
@@ -133,7 +133,7 @@
                                 <span class="text-secondary">{{ $member->user->email }}</span>
                             </div>
                         @empty
-                            <p class="small text-secondary mb-0">{{ __('You are the first member in this group.') }}</p>
+                            <p class="small text-secondary mb-0">{{ __('No active members in this group') }}</p>
                         @endforelse
                     </div>
                 @else
